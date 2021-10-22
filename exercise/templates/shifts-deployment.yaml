@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "exercise.fullname" . }}-shifts-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ include "exercise.fullname" . }}-shifts-deployment
+spec:
+  replicas: {{ .Values.shifts.replicaCount }}
+  strategy:
+        type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ include "exercise.fullname" . }}-shifts-pod
+  template:
+    metadata:
+      labels:
+        app: {{ include "exercise.fullname" . }}-shifts-pod
+    spec:
+      containers:
+      - name: shifts-container
+        image: "{{ .Values.shifts.repository }}:{{ .Values.shifts.tag }}"
+        imagePullPolicy: Always
+        env:
+        - name: ENV
+          value: "{{ .Values.env }}"
+        - name: SERVICE
+          value: "shifts"
+        ports:
+        - containerPort: {{ .Values.shifts.containerPort }}
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m

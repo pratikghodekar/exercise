@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "exercise.fullname" . }}-users-hpa
+  labels:
+    {{- include "exercise.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "exercise.fullname" . }}-users-deployment
+  minReplicas: {{ .Values.users.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.users.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.users.autoscaling.targetCPUUtilizationPercentage }}

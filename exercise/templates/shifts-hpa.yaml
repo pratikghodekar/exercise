@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "exercise.fullname" . }}-shifts-hpa
+  labels:
+    {{- include "exercise.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "exercise.fullname" . }}-shifts-deployment
+  minReplicas: {{ .Values.shifts.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.shifts.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.shifts.autoscaling.targetCPUUtilizationPercentage }}

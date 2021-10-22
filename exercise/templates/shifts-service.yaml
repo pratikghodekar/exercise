@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "exercise.fullname" . }}-shifts-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ include "exercise.fullname" . }}-shifts-service
+spec:
+  ports:
+    - port: {{ .Values.shifts.service.port }}
+      targetPort: {{ .Values.shifts.service.targetPort }}
+      protocol: TCP
+      nodePort: {{ .Values.shifts.service.nodePort }}
+  type: NodePort
+  selector:
+    app: {{ include "exercise.fullname" . }}-shifts-pod
